@@ -10,6 +10,9 @@ from dataclasses import dataclass
 from src.components.data_transformation import DataTransformation
 from src.components.data_transformation import DataTransformationConfig
 
+from src.components.model_trainer import ModelTrainerConfig
+from src.components.model_trainer import ModelTrainer
+
 
 @dataclass
 class DataIngestionConfig:
@@ -25,7 +28,7 @@ class DataIngestion:
     def initiate_data_ingestion(self):
         logging.info("Entered the data ingestion method or component")
         try:
-            file_path = os.path.join("notebook", "data", "stud.csv")
+            file_path = self.ingestion_config.raw_data_path
             df = pd.read_csv(file_path)
             logging.info("Read the dataset as dataframe")
 
@@ -72,12 +75,19 @@ class DataIngestion:
 
 
 if __name__ == "__main__":
-    obj = DataIngestion()
-    train_data, test_data = obj.initiate_data_ingestion()
+    data_ingestion = DataIngestion()
+    train_data, test_data = data_ingestion.initiate_data_ingestion()
 
     # print("Data ingestion completed successfully.")
     # print(f"Train file: {train_path}")
     # print(f"Test file: {test_path}")
 
     data_transformation = DataTransformation()
-    data_transformation.initiate_data_transformation(train_data, test_data)
+    # data_transformation.initiate_data_transformation(train_data, test_data)
+    train_arr, test_arr, _ = data_transformation.initiate_data_transformation(
+        train_data, test_data)
+
+    modeltrainer = ModelTrainer()
+    result = modeltrainer.initiate_model_trainer(train_arr, test_arr)
+
+    print(result)
